@@ -24,6 +24,8 @@ public class CardProspector : Card
 
     private void OnMouseDown()
     {
+        
+
         archiveLayer = this.GetComponent<SpriteRenderer>().sortingLayerName;
         archiveOrder = this.GetComponent<SpriteRenderer>().sortingOrder;
         archivePos = this.transform.position;
@@ -31,52 +33,68 @@ public class CardProspector : Card
 
     override public void OnMouseDrag()
     {
-        if (!this.faceUp) return;
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        
-
-        SetSortingLayerName("Draw");
-        SetSortOrder(5);
-        this.transform.position = new Vector3(mousePos.x, mousePos.y, -10);
-    }
-    public void OnMouseUp()
-    {
-        Debug.Log("released");
-
-        Ray ray = new Ray(this.transform.position, Vector3.forward);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
+        if (this.slotDef.type == "drawpile")
         {
-            Debug.Log("hit");
-            Target target = hit.collider.gameObject.GetComponent<Target>();
-
-            Debug.Log(hit.collider.gameObject);
-
-            if (this.suit == target.suit)
-            {
-                Debug.Log("released on correct target");
-                target.NestCard(this);
-            }
-            else
-            {
-                SetSortingLayerName(archiveLayer);
-                SetSortOrder(archiveOrder);
-                this.transform.position = archivePos;
-                Debug.Log("reset 1");
-            }
+            return;
         }
         else
         {
-            SetSortingLayerName(archiveLayer);
-            SetSortOrder(archiveOrder);
-            this.transform.position = archivePos;
-            Debug.Log("reset 2");
+            if (!this.faceUp) return;
+            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+
+            SetSortingLayerName("Draw");
+            SetSortOrder(5);
+            this.transform.position = new Vector3(mousePos.x, mousePos.y, -10);
         }
-
-
-
-
         
-        
+    }
+    public void OnMouseUp()
+    {        
+        Debug.Log("released");
+        if (this.transform.position.y > 5 && !this.slotDef.faceUp)
+        {
+            Debug.Log("we tried");
+            Camera.main.GetComponent<Prospector>().MoveToDiscard(this);
+            Camera.main.GetComponent<Prospector>().UpdateDrawPile();
+        }
+        else
+        {
+            Ray ray = new Ray(this.transform.position, Vector3.forward);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                Debug.Log("hit");
+                Target target = hit.collider.gameObject.GetComponent<Target>();
+
+                Debug.Log(hit.collider.gameObject);
+                if (target == null)
+                {
+                    cardReset();
+                    return;
+                }
+                if (this.suit == target.suit)
+                {
+                    Debug.Log("released on correct target");
+                    target.NestCard(this);
+                }
+                else
+                {
+                    cardReset();
+                    Debug.Log("reset 1");
+                }
+            }
+            else
+            {
+                cardReset();
+                Debug.Log("reset 2");
+            }            
+        }
+    }
+    public void cardReset()
+    {
+        SetSortingLayerName(archiveLayer);
+        SetSortOrder(archiveOrder);
+        this.transform.position = archivePos;
     }
 }

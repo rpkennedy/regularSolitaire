@@ -177,7 +177,7 @@ public class Prospector : MonoBehaviour
         }
     }
 
-    void MoveToDiscard(CardProspector cd)
+    public void MoveToDiscard(CardProspector cd)
     {
         cd.state = eCardState.discard;
         discardPile.Add(cd);
@@ -194,7 +194,7 @@ public class Prospector : MonoBehaviour
         cd.SetSortOrder(-100 + discardPile.Count);
     }
 
-    void MoveToTarget(CardProspector cd)
+    public void MoveToTarget(CardProspector cd)
     {
         if (target != null) MoveToDiscard(target);
 
@@ -213,7 +213,7 @@ public class Prospector : MonoBehaviour
         cd.SetSortOrder(0);
     }
 
-    void UpdateDrawPile()
+    public void UpdateDrawPile()
     {
         CardProspector cd;
 

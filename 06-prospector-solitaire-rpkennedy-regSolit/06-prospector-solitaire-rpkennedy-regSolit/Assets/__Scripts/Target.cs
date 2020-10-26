@@ -15,6 +15,7 @@ public class Target : MonoBehaviour
     void Start()
     {    
         isFull = false;
+        stack = new List<CardProspector>();
     }
                         
     void Update()
@@ -24,10 +25,30 @@ public class Target : MonoBehaviour
 
     public void NestCard(CardProspector card)
     {
-        if(stack.Count == 0 || stack[stack.Count-1].rank == card.rank - 1)
+        if(stack.Count == 0)
         {
+            if(card.rank == 1)
+            {
+                Debug.Log("stick 1");
+                card.transform.position = this.transform.position;
+                stack.Add(card);
+            }
+            else
+            {
+                Debug.Log("reset target 1");
+                card.cardReset();
+            }
+        }
+        else if(stack[stack.Count - 1].rank == card.rank - 1)
+        {
+            Debug.Log("stick 2");
             card.transform.position = this.transform.position;
             stack.Add(card);
+        }
+        else
+        {
+            Debug.Log("reset target");
+            card.cardReset();
         }
     }
 }
